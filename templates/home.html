@@ -1,15 +1,165 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Find Trusted Local Services</h1>
+        <p class="lead mt-3">Connect with verified professionals in your area - plumbers, electricians, tutors, and more!</p>
+        
+        <!-- Search Bar -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" placeholder="What service do you need?">
+                    <select class="form-select form-select-lg w-25">
+                        <option>All Categories</option>
+                        <option>Plumber</option>
+                        <option>Electrician</option>
+                        <option>Tutor</option>
+                        <option>Cleaner</option>
+                    </select>
+                    <button class="btn btn-light btn-lg">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1 class="display-4">Welcome to ServiceLink</h1>
-            <p class="lead">Your trusted platform for finding local service providers</p>
-            <hr>
-            <div class="mt-4">
-                <a href="/accounts/register/" class="btn btn-success btn-lg">Get Started</a>
-                <a href="/accounts/login/" class="btn btn-primary btn-lg">Login</a>
+    <!-- Categories Section -->
+    <h2 class="text-center mb-4">Popular Categories</h2>
+    <div class="row">
+        <div class="col-md-2 col-4 mb-3">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <i class="fas fa-wrench fa-3x text-primary"></i>
+                    <p class="mt-2 fw-bold mb-0">Plumber</p>
+                    <small class="text-muted">24 providers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-4 mb-3">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <i class="fas fa-bolt fa-3x text-warning"></i>
+                    <p class="mt-2 fw-bold mb-0">Electrician</p>
+                    <small class="text-muted">18 providers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-4 mb-3">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <i class="fas fa-chalkboard-user fa-3x text-success"></i>
+                    <p class="mt-2 fw-bold mb-0">Tutor</p>
+                    <small class="text-muted">32 providers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-4 mb-3">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <i class="fas fa-broom fa-3x text-info"></i>
+                    <p class="mt-2 fw-bold mb-0">Cleaner</p>
+                    <small class="text-muted">15 providers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-4 mb-3">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <i class="fas fa-car fa-3x text-danger"></i>
+                    <p class="mt-2 fw-bold mb-0">Mechanic</p>
+                    <small class="text-muted">12 providers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-4 mb-3">
+            <div class="card category-card text-center">
+                <div class="card-body">
+                    <i class="fas fa-paintbrush fa-3x text-secondary"></i>
+                    <p class="mt-2 fw-bold mb-0">Painter</p>
+                    <small class="text-muted">9 providers</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Services -->
+    <h2 class="text-center mt-5 mb-4">Featured Services</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card service-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Emergency Plumbing</h5>
+                    <p class="card-text text-muted">24/7 emergency plumbing service for leaky pipes and clogs</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-primary">Rs. 500</span>
+                        <span><i class="fas fa-star text-warning"></i> 4.8 (45 reviews)</span>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3">Book Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card service-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Home Electrical Repair</h5>
+                    <p class="card-text text-muted">Complete electrical solutions for your home</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-primary">Rs. 800</span>
+                        <span><i class="fas fa-star text-warning"></i> 4.9 (32 reviews)</span>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3">Book Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card service-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Mathematics Tutoring</h5>
+                    <p class="card-text text-muted">Expert math tutoring for grades 8-12</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-primary">Rs. 1000/session</span>
+                        <span><i class="fas fa-star text-warning"></i> 4.7 (28 reviews)</span>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <h2 class="text-center mt-5 mb-4">How ServiceLink Works</h2>
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                    <h5>1. Search</h5>
+                    <p>Find the service you need in your area</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                    <h5>2. Book</h5>
+                    <p>Choose a provider and schedule appointment</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                    <h5>3. Review</h5>
+                    <p>Rate and review your experience</p>
+                </div>
             </div>
         </div>
     </div>
