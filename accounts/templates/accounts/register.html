@@ -3,24 +3,152 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h4 class="mb-0"><i class="fas fa-user-plus"></i> Create Account</h4>
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-user-plus fa-3x mb-2"></i>
+                    <h3 class="mb-0">Create Your Account</h3>
+                    <p class="mb-0 mt-2">Join ServiceLink today</p>
                 </div>
-                <div class="card-body">
-                    <form method="post">
+                
+                <div class="card-body p-5">
+                    <form method="post" novalidate>
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-success w-100">Register</button>
+                        
+                        <!-- Username Field -->
+                        <div class="mb-4">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-user text-primary"></i> Username
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">{{ form.username.help_text }}</small>
+                        </div>
+                        
+                        <!-- Email Field -->
+                        <div class="mb-4">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-envelope text-primary"></i> Email Address
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Phone Field -->
+                        <div class="mb-4">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-phone text-primary"></i> Phone Number (Optional)
+                            </label>
+                            {{ form.phone }}
+                            <small class="text-muted">For providers to contact you</small>
+                        </div>
+                        
+                        <!-- User Type Selection - Customer vs Provider -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-user-tag text-primary"></i> I want to:
+                            </label>
+                            <div class="row mt-2">
+                                {% for radio in form.user_type %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="card border-2 {% if forloop.first %}border-primary{% else %}border-secondary{% endif %} user-type-card" style="cursor: pointer;" onclick="selectRadio('{{ radio.id_for_label }}')">
+                                        <div class="card-body py-3">
+                                            <div class="form-check">
+                                                {{ radio.tag }}
+                                                <label class="form-check-label fw-bold" for="{{ radio.id_for_label }}">
+                                                    {% if forloop.first %}
+                                                        <i class="fas fa-search text-primary me-2"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-tools text-success me-2"></i>
+                                                    {% endif %}
+                                                    {{ radio.choice_label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Password Fields -->
+                        <div class="mb-4">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-lock text-primary"></i> Password
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">{{ form.password1.help_text }}</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-check-circle text-primary"></i> Confirm Password
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                        
+                        <hr>
+                        
+                        <p class="text-center mb-0">
+                            Already have an account? 
+                            <a href="{% url 'login' %}" class="text-decoration-none fw-bold">
+                                <i class="fas fa-sign-in-alt"></i> Login here
+                            </a>
+                        </p>
                     </form>
-                    <hr>
-                    <p class="text-center mb-0">
-                        Already have an account? <a href="{% url 'login' %}">Login here</a>
-                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .user-type-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .user-type-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    input[type="radio"] {
+        transform: scale(1.2);
+        margin-right: 10px;
+        cursor: pointer;
+    }
+    
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+</style>
+
+<script>
+    function selectRadio(radioId) {
+        document.getElementById(radioId).checked = true;
+    }
+</script>
 {% endblock %}
