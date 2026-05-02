@@ -37,7 +37,13 @@
     </style>
 </head>
 <body>
-    
+
+  <form action="{% url 'logout' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="nav-link btn btn-link" style="display: inline; background: none; border: none; color: rgba(255,255,255,0.9);">
+        Logout ({{ user.username }})
+    </button>
+</form>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
@@ -62,9 +68,16 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">
+                            {% comment %} <a class="nav-link" href="{% url 'logout' %}">
                                 <i class="fas fa-sign-out-alt"></i> Logout ({{ user.username }})
-                            </a>
+                            </a> {% endcomment %}
+
+                            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                                  {% csrf_token %}
+                                  <button type="submit" class="nav-link btn btn-link" style="display: inline; background: none; border: none; color: rgba(255,255,255,0.85); padding: 8px 16px;">
+                                   Logout ({{ user.username }})
+                                </button>
+                            </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
