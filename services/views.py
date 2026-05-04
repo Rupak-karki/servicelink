@@ -1,7 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect  # Added 'redirect'
 from django.db.models import Q
 from django.core.paginator import Paginator
-from .models import Service, Category
+from django.contrib.auth.decorators import login_required  # Added this
+from django.contrib import messages  # Added this
+from .models import Service, Category, Booking  # Added 'Booking'
+from .forms import BookingForm  # Added this
 
 def service_list(request):
     # Start with all available services
@@ -70,3 +73,72 @@ def service_detail(request, pk):
         'related_services': related_services,
     }
     return render(request, 'services/service_detail.html', context)
+
+# for booking system
+
+
+# Add this view - Book a service
+@login_required
+def book_service(request, pk):
+    service = get_object_or_404(Service, pk=pk, is_available=True)
+    
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.service = service
+            booking.customer = request.user
+            booking.save()
+            messages.success(request, f'Your booking for "{service.title}" has been submitted! Provider will confirm soon.')
+            return redirect('my_bookings')
+    else:
+        form = BookingForm()
+    
+    return render(request, 'services/book_service.html', {
+        'form': form,
+        'service': service
+    })
+
+# Add this view - My Bookings (Customer view)
+@login_required
+def my_bookings(request):
+    bookings = Booking.objects.filter(customer=request.user)
+    return render(request, 'services/my_bookings.html', {
+        'bookings': bookings
+    })
+
+# Add this view - Manage Bookings (Provider view)
+@login_required
+def manage_bookings(request):
+    # Get all bookings for services that this user provides
+    bookings = Booking.objects.filter(service__provider=request.user)
+    return render(request, 'services/manage_bookings.html', {
+        'bookings': bookings
+    })
+
+# Add this view - Update booking status
+@login_required
+def update_booking_status(request, pk, status):
+    booking = get_object_or_404(Booking, pk=pk, service__provider=request.user)
+    
+    valid_statuses = ['confirmed', 'completed', 'cancelled']
+    if status in valid_statuses:
+        booking.status = status
+        booking.save()
+        messages.success(request, f'Booking #{booking.id} has been {status}!')
+    
+    return redirect('manage_bookings')
+
+# Add this view - Cancel booking (Customer)
+@login_required
+def cancel_booking(request, pk):
+    booking = get_object_or_404(Booking, pk=pk, customer=request.user)
+    
+    if booking.status == 'pending':
+        booking.status = 'cancelled'
+        booking.save()
+        messages.success(request, 'Your booking has been cancelled.')
+    else:
+        messages.error(request, 'Cannot cancel booking at this stage.')
+    
+    return redirect('my_bookings')
