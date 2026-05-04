@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-tasks"></i> Manage Bookings</h2>
+    
+    {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Service</th>
+                        <th>Booking Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>#{{ booking.id }}</td>
+                        <td>{{ booking.customer.username }}</td>
+                        <td>{{ booking.service.title|truncatechars:30 }}</td>
+                        <td>{{ booking.booking_date|date:"M j, Y, g:i a" }}</td>
+                        <td>
+                            <span class="badge {% if booking.status == 'pending' %}bg-warning
+                                               {% elif booking.status == 'confirmed' %}bg-info
+                                               {% elif booking.status == 'completed' %}bg-success
+                                               {% else %}bg-danger{% endif %}">
+                                {{ booking.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if booking.status == 'pending' %}
+                                    <a href="{% url 'update_booking_status' booking.id 'confirmed' %}" class="btn btn-success">
+                                        <i class="fas fa-check"></i> Accept
+                                    </a>
+                                    <a href="{% url 'update_booking_status' booking.id 'cancelled' %}" class="btn btn-danger">
+                                        <i class="fas fa-times"></i> Reject
+                                    </a>
+                                {% elif booking.status == 'confirmed' %}
+                                    <a href="{% url 'update_booking_status' booking.id 'completed' %}" class="btn btn-primary">
+                                        <i class="fas fa-check-double"></i> Mark Completed
+                                    </a>
+                                {% endif %}
+                                <a href="#" class="btn btn-info" onclick="alert('Contact: {{ booking.customer.email }}')">
+                                    <i class="fas fa-envelope"></i> Contact
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x mb-2"></i>
+            <p>No bookings received yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
