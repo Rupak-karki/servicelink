@@ -26,3 +26,29 @@ class Service(models.Model):
     
     def __str__(self):
         return self.title
+    
+
+# for booking system
+
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='bookings')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    booking_date = models.DateTimeField()
+    special_requests = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.customer.username} - {self.service.title} - {self.status}"
+    
+    class Meta:
+        ordering = ['-created_at']
+    
