@@ -111,6 +111,12 @@ def my_bookings(request):
 @login_required
 def manage_bookings(request):
     # Get all bookings for services that this user provides
+    # Only providers can access
+
+    if request.user.profile.user_type != 'provider':
+        messages.error(request, 'Access denied. Provider only area.')
+        return redirect('dashboard')
+
     bookings = Booking.objects.filter(service__provider=request.user)
     return render(request, 'services/manage_bookings.html', {
         'bookings': bookings
@@ -142,3 +148,14 @@ def cancel_booking(request, pk):
         messages.error(request, 'Cannot cancel booking at this stage.')
     
     return redirect('my_bookings')
+
+
+@login_required
+def provider_services(request):
+    # Only providers can access
+    if request.user.profile.user_type != 'provider':
+        messages.error(request, 'Access denied. Provider only area.')
+        return redirect('dashboard')
+    
+    services = Service.objects.filter(provider=request.user)
+    return render(request, 'services/provider_services.html', {'services': services})
