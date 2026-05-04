@@ -38,12 +38,6 @@
 </head>
 <body>
 
-  <form action="{% url 'logout' %}" method="post" style="display: inline;">
-    {% csrf_token %}
-    <button type="submit" class="nav-link btn btn-link" style="display: inline; background: none; border: none; color: rgba(255,255,255,0.9);">
-        Logout ({{ user.username }})
-    </button>
-</form>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
@@ -53,33 +47,46 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Always visible -->
                     <li class="nav-item">
                         <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/services/">Services</a>
                     </li>
+
+                    <!-- Authenticated users -->
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dashboard' %}">
                                 <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
                         </li>
-                        <li class="nav-item">
-                            {% comment %} <a class="nav-link" href="{% url 'logout' %}">
-                                <i class="fas fa-sign-out-alt"></i> Logout ({{ user.username }})
-                            </a> {% endcomment %}
 
+                        <!-- Provider-only menu -->
+                        {% if request.session.user_type == 'provider' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage_bookings' %}">
+                                <i class="fas fa-tasks"></i> Manage Bookings
+                            </a>
+                        </li>
+                        {% endif %}
+
+
+                        <!-- Logout -->
+                        <li class="nav-item">
                             <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                                  {% csrf_token %}
-                                  <button type="submit" class="nav-link btn btn-link" style="display: inline; background: none; border: none; color: rgba(255,255,255,0.85); padding: 8px 16px;">
-                                   Logout ({{ user.username }})
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link" style="display: inline; background: none; border: none; color: rgba(255,255,255,0.85); padding: 8px 16px;">
+                                    Logout ({{ user.username }})
                                 </button>
                             </form>
                         </li>
                     {% else %}
+                        <!-- Guest menu -->
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">
                                 <i class="fas fa-sign-in-alt"></i> Login
@@ -117,7 +124,7 @@
         <div class="container text-center">
             <p>&copy; 2025 ServiceLink. All rights reserved.</p>
             <p class="small">Connecting you with trusted local service providers in Nepal</p>
-            <p class="small">Purbanchal University, Kathmandu, Nepal</p>
+            <p class="small">Rupak Karki, Kathmandu, Nepal</p>
         </div>
     </footer>
 
