@@ -115,7 +115,26 @@
                                     <i class="fas fa-map-marker-alt"></i> {{ service.location|default:"Online" }}
                                 </small>
                             </div>
+                            
+                            <div class="mt-2">
+                                {% if service.avg_rating > 0 %}
+                                    <span class="text-warning">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= service.avg_rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                             <i class="far fa-star"></i>
+                                         {% endif %}
+                                       {% endfor %}
+                                   </span>
+                                   <small class="text-muted">({{ service.review_count }})</small>
+                               {% else %}
+                                    <small class="text-muted">No reviews yet</small>
+                             {% endif %}
+                            </div>
+                            
                         </div>
+
                         <div class="card-footer bg-white border-top-0">
                             <a href="{% url 'service_detail' service.id %}" class="btn btn-outline-primary w-100">
                                 View Details <i class="fas fa-arrow-right"></i>
