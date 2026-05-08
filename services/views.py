@@ -6,6 +6,9 @@ from django.contrib import messages  # Added this
 from .models import Service, Category, Booking  # Added 'Booking'
 from .forms import BookingForm  # Added this
 
+from .forms import ServiceForm
+
+
 def service_list(request):
     # Start with all available services
     services = Service.objects.filter(is_available=True)
@@ -154,8 +157,58 @@ def cancel_booking(request, pk):
 def provider_services(request):
     # Only providers can access
     if request.user.profile.user_type != 'provider':
-        messages.error(request, 'Access denied. Provider only area.')
+        messages.error(request, 'Access denied. Provider area only.')
         return redirect('dashboard')
     
     services = Service.objects.filter(provider=request.user)
     return render(request, 'services/provider_services.html', {'services': services})
+
+
+@login_required
+def add_service(request):
+    """Provider can add a new service"""
+    if request.user.profile.user_type != 'provider':
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, request.FILES)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.provider = request.user
+            service.save()
+            messages.success(request, f'Service "{service.title}" has been added successfully!')
+            return redirect('provider_services')
+    else:
+        form = ServiceForm()
+    
+    return render(request, 'services/add_service.html', {'form': form})
+
+@login_required
+def edit_service(request, pk):
+    """Provider can edit their service"""
+    service = get_object_or_404(Service, pk=pk, provider=request.user)
+    
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, request.FILES, instance=service)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Service "{service.title}" has been updated!')
+            return redirect('provider_services')
+    else:
+        form = ServiceForm(instance=service)
+    
+    return render(request, 'services/edit_service.html', {'form': form, 'service': service})
+
+@login_required
+def delete_service(request, pk):
+    """Provider can delete their service"""
+    service = get_object_or_404(Service, pk=pk, provider=request.user)
+    
+    if request.method == 'POST':
+        service_title = service.title
+        service.delete()
+        messages.success(request, f'Service "{service_title}" has been deleted.')
+        return redirect('provider_services')
+    
+    return render(request, 'services/delete_service.html', {'service': service})
