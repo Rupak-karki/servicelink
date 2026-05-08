@@ -1,5 +1,5 @@
 from django import forms
-from .models import Booking, Service, Category
+from .models import Booking, Service, Category, Review
 
 class BookingForm(forms.ModelForm):
     class Meta:
@@ -39,3 +39,22 @@ class ServiceForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.all()
         self.fields['is_available'].initial = True
+
+#for review form
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.RadioSelect(choices=[(i, f'{i} Star{"s" if i > 1 else ""}') for i in range(1, 6)]),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Share your experience with this service...'
+            }),
+        }
+        labels = {
+            'rating': 'Your Rating',
+            'comment': 'Your Review'
+        }

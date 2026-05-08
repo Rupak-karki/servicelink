@@ -17,4 +17,6 @@ urlpatterns = [
     path('edit-service/<int:pk>/', views.edit_service, name='edit_service'),
 
     path('delete-service/<int:pk>/', views.delete_service, name='delete_service'),
-]
+
+    # Review URLs
+    path('review/<int:booking_id>/', views.leave_review, name='leave_review'),]

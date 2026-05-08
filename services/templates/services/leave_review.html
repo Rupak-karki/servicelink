@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-star"></i> Leave a Review</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-light">
+                        <strong>Service:</strong> {{ booking.service.title }}<br>
+                        <strong>Provider:</strong> {{ booking.service.provider.username }}<br>
+                        <strong>Date:</strong> {{ booking.booking_date|date:"F j, Y" }}
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Your Rating</label>
+                            <div class="rating-input">
+                                {% for radio in form.rating %}
+                                    <label class="rating-option">
+                                        {{ radio.tag }}
+                                        <span class="star">★</span>
+                                        <span class="ms-1">{{ radio.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label fw-bold">
+                                Your Review
+                            </label>
+                            {{ form.comment }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-paper-plane"></i> Submit Review
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rating-input {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .rating-option {
+        cursor: pointer;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .rating-option:hover {
+        background-color: #f0f0f0;
+        border-color: #ffc107;
+    }
+    .rating-option input {
+        display: none;
+    }
+    .rating-option .star {
+        color: #ddd;
+        font-size: 20px;
+    }
+    .rating-option:has(input:checked) {
+        background-color: #fff3cd;
+        border-color: #ffc107;
+    }
+    .rating-option:has(input:checked) .star {
+        color: #ffc107;
+    }
+</style>
+{% endblock %}

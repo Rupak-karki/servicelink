@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Category, Service, Booking
+from .models import Category, Service, Booking, Review  # Add Review
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -20,3 +22,10 @@ class BookingAdmin(admin.ModelAdmin):
     list_editable = ['status']  # Change status directly in list view
     search_fields = ['customer__username', 'service__title']
     date_hierarchy = 'booking_date'
+
+# Admin for Review
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+     list_display = ['booking', 'rating', 'created_at']
+     
+     list_filter = ['rating', 'created_at']

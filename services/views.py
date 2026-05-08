@@ -3,11 +3,10 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required  # Added this
 from django.contrib import messages  # Added this
-from .models import Service, Category, Booking  # Added 'Booking'
+from .models import Service, Category, Booking, Review  # Added'Review'
 from .forms import BookingForm  # Added this
 
-from .forms import ServiceForm
-
+from .forms import ServiceForm, ReviewForm  # Added this
 
 def service_list(request):
     # Start with all available services
@@ -60,7 +59,18 @@ def service_list(request):
         'max_price': max_price,
         'sort_by': sort_by,
     }
+ # Add average rating to each service
+    for service in services:
+        reviews = Review.objects.filter(booking__service=service)
+        if reviews.exists():
+            service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
+            service.review_count = reviews.count()
+        else:
+            service.avg_rating = 0
+            service.review_count = 0
+
     return render(request, 'services/service_list.html', context)
+
 
 def service_detail(request, pk):
     service = get_object_or_404(Service, pk=pk, is_available=True)
@@ -212,3 +222,43 @@ def delete_service(request, pk):
         return redirect('provider_services')
     
     return render(request, 'services/delete_service.html', {'service': service})
+
+# Add this view - Leave a review for completed booking
+
+@login_required
+def leave_review(request, booking_id):
+    """Customer can leave review for completed booking"""
+    booking = get_object_or_404(Booking, pk=booking_id, customer=request.user)
+    
+    # Check if booking is completed
+    if booking.status != 'completed':
+        messages.error(request, 'You can only review completed services.')
+        return redirect('my_bookings')
+    
+    # Check if review already exists
+    if hasattr(booking, 'review'):
+        messages.error(request, 'You have already reviewed this service.')
+        return redirect('my_bookings')
+    
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.booking = booking
+            review.save()
+            
+            # Update service average rating
+            service = booking.service
+            reviews = Review.objects.filter(booking__service=service)
+            avg_rating = sum(r.rating for r in reviews) / reviews.count()
+            # You can add an average_rating field to Service model later
+            
+            messages.success(request, 'Thank you for your review!')
+            return redirect('my_bookings')
+    else:
+        form = ReviewForm()
+    
+    return render(request, 'services/leave_review.html', {
+        'form': form,
+        'booking': booking
+    })
