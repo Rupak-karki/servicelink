@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-tools"></i> My Services</h2>
-        <a href="#" class="btn btn-success" onclick="alert('Service creation coming soon!')">
+        <a href="{% url 'add_service' %}" class="btn btn-success">
             <i class="fas fa-plus"></i> Add New Service
         </a>
     </div>
@@ -13,21 +13,36 @@
         <div class="row">
             {% for service in services %}
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 shadow-sm">
+                    {% if service.image %}
+                    <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}" style="height: 180px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light text-center py-5">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
                     <div class="card-body">
-                        <h5>{{ service.title }}</h5>
-                        <p class="text-muted small">{{ service.description|truncatewords:20 }}</p>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-primary fw-bold">Rs. {{ service.price }}</span>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title">{{ service.title }}</h5>
                             <span class="badge {% if service.is_available %}bg-success{% else %}bg-danger{% endif %}">
                                 {{ service.is_available|yesno:"Available,Unavailable" }}
                             </span>
                         </div>
+                        <p class="card-text text-muted small">{{ service.description|truncatewords:15 }}</p>
+                        <p class="text-primary fw-bold mb-0">Rs. {{ service.price }}</p>
+                        <small class="text-muted">{{ service.category.name }} | {{ service.location|default:"Online" }}</small>
                     </div>
                     <div class="card-footer bg-white">
                         <div class="btn-group w-100">
-                            <a href="#" class="btn btn-sm btn-outline-primary" onclick="alert('Edit feature coming soon!')">Edit</a>
-                            <a href="{% url 'service_detail' service.id %}" class="btn btn-sm btn-outline-info">View</a>
+                            <a href="{% url 'edit_service' service.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_service' service.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                            <a href="{% url 'service_detail' service.id %}" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-eye"></i> View
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -35,9 +50,11 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-info text-center">
-            <p>You haven't added any services yet.</p>
-            <button class="btn btn-primary" onclick="alert('Service creation coming soon!')">Add Your First Service</button>
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>No Services Yet</h4>
+            <p>You haven't added any services to your profile.</p>
+            <a href="{% url 'add_service' %}" class="btn btn-primary">Add Your First Service</a>
         </div>
     {% endif %}
 </div>
