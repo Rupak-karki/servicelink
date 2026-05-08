@@ -50,7 +50,7 @@
                              {% elif booking.status == 'completed' %}
                                  {% if booking.review %}
                                      <button class="btn btn-secondary btn-sm" disabled>
-                                           <i class="fas fa-check"></i> Reviewed
+                                           <i class="fas fa-check"></i> Reviewed ({{ booking.review.rating }}★)
                                         </button>
                                  {% else %}
                                      <a href="{% url 'leave_review' booking.id %}" class="btn btn-warning btn-sm">

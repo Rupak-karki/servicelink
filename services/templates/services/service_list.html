@@ -11,61 +11,61 @@
                 </div>
                 <div class="card-body">
                     <form method="get">
-                        <!-- Search input - preserve existing filters -->
+                        <!-- Preserve existing filters -->
                         <input type="hidden" name="category" value="{{ selected_category }}">
                         <input type="hidden" name="sort" value="{{ sort_by }}">
-                        
+
                         <!-- Search Field -->
                         <div class="mb-3">
                             <label class="form-label">Search</label>
-                            <input type="text" name="q" class="form-control" 
-                                   placeholder="Search services..." 
+                            <input type="text" name="q" class="form-control"
+                                   placeholder="Search services..."
                                    value="{{ search_query }}">
                         </div>
-                        
+
                         <!-- Category Filter -->
                         <div class="mb-3">
                             <label class="form-label">Category</label>
                             <select name="category" class="form-select">
                                 <option value="">All Categories</option>
                                 {% for category in categories %}
-                                <option value="{{ category.slug }}" 
+                                    <option value="{{ category.slug }}"
                                         {% if selected_category == category.slug %}selected{% endif %}>
-                                    {{ category.name }}
-                                </option>
+                                        {{ category.name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </div>
-                        
+
                         <!-- Price Range -->
                         <div class="mb-3">
                             <label class="form-label">Price Range (Rs.)</label>
                             <div class="row">
                                 <div class="col-6">
-                                    <input type="number" name="min_price" class="form-control" 
+                                    <input type="number" name="min_price" class="form-control"
                                            placeholder="Min" value="{{ min_price }}">
                                 </div>
                                 <div class="col-6">
-                                    <input type="number" name="max_price" class="form-control" 
+                                    <input type="number" name="max_price" class="form-control"
                                            placeholder="Max" value="{{ max_price }}">
                                 </div>
                             </div>
                         </div>
-                        
+
+                        <!-- Apply / Clear Buttons -->
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-search"></i> Apply Filters
                         </button>
-                        
                         {% if search_query or selected_category or min_price or max_price %}
-                        <a href="{% url 'service_list' %}" class="btn btn-secondary w-100 mt-2">
-                            <i class="fas fa-times"></i> Clear Filters
-                        </a>
+                            <a href="{% url 'service_list' %}" class="btn btn-secondary w-100 mt-2">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </a>
                         {% endif %}
                     </form>
                 </div>
             </div>
         </div>
-        
+
         <!-- Main Content - Service Grid -->
         <div class="col-md-9">
             <!-- Sort and Results Count -->
@@ -75,115 +75,139 @@
                 </p>
                 <div class="d-flex align-items-center">
                     <label class="me-2">Sort by:</label>
-                    <select class="form-select form-select-sm w-auto" onchange="window.location.href=this.value">
-                        <option value="?sort=-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>
+                    <select class="form-select form-select-sm w-auto"
+                            onchange="window.location.href = this.value">
+                        <option value="?sort=-created_at"
+                            {% if sort_by == "-created_at" %}selected{% endif %}>
                             Newest First
                         </option>
-                        <option value="?sort=price" {% if sort_by == 'price' %}selected{% endif %}>
+                        <option value="?sort=price"
+                            {% if sort_by == "price" %}selected{% endif %}>
                             Price: Low to High
                         </option>
-                        <option value="?sort=-price" {% if sort_by == '-price' %}selected{% endif %}>
+                        <option value="?sort=-price"
+                            {% if sort_by == "-price" %}selected{% endif %}>
                             Price: High to Low
                         </option>
-                        <option value="?sort=title" {% if sort_by == 'title' %}selected{% endif %}>
+                        <option value="?sort=title"
+                            {% if sort_by == "title" %}selected{% endif %}>
                             Name A-Z
                         </option>
                     </select>
                 </div>
             </div>
-            
+
             <!-- Services Grid -->
             <div class="row">
                 {% for service in services %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm service-card">
-                        {% if service.image %}
-                        <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}" 
-                             style="height: 180px; object-fit: cover;">
-                        {% else %}
-                        <div class="card-img-top bg-light text-center py-5">
-                            <i class="fas fa-tools fa-3x text-muted"></i>
-                        </div>
-                        {% endif %}
-                        <div class="card-body">
-                            <span class="badge bg-primary mb-2">{{ service.category.name }}</span>
-                            <h5 class="card-title">{{ service.title }}</h5>
-                            <p class="card-text text-muted small">{{ service.description|truncatewords:15 }}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <h5 class="text-primary mb-0">Rs. {{ service.price }}</h5>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt"></i> {{ service.location|default:"Online" }}
-                                </small>
-                            </div>
-                            
-                            <div class="mt-2">
-                                {% if service.avg_rating > 0 %}
-                                    <span class="text-warning">
-                                        {% for i in "12345"|make_list %}
-                                            {% if forloop.counter <= service.avg_rating %}
-                                                <i class="fas fa-star"></i>
-                                            {% else %}
-                                             <i class="far fa-star"></i>
-                                         {% endif %}
-                                       {% endfor %}
-                                   </span>
-                                   <small class="text-muted">({{ service.review_count }})</small>
-                               {% else %}
-                                    <small class="text-muted">No reviews yet</small>
-                             {% endif %}
-                            </div>
-                            
-                        </div>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm service-card">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" class="card-img-top"
+                                     alt="{{ service.title }}"
+                                     style="height: 180px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light text-center py-5">
+                                    <i class="fas fa-tools fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
 
-                        <div class="card-footer bg-white border-top-0">
-                            <a href="{% url 'service_detail' service.id %}" class="btn btn-outline-primary w-100">
-                                View Details <i class="fas fa-arrow-right"></i>
-                            </a>
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2">{{ service.category.name }}</span>
+                                <h5 class="card-title">{{ service.title }}</h5>
+                                <p class="card-text text-muted small">
+                                    {{ service.description|truncatewords:15 }}
+                                </p>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div>
+                                        <h5 class="text-primary mb-0">Rs. {{ service.price }}</h5>
+                                        {% if service.avg_rating > 0 %}
+                                            <div class="small mt-1">
+                                                <span class="text-warning">
+                                                    {% for i in "12345"|make_list %}
+                                                        {% if forloop.counter <= service.avg_rating %}
+                                                            <i class="fas fa-star"></i>
+                                                        {% else %}
+                                                            {% if forloop.counter <= service.avg_rating|add:0.5 %}
+                                                                <i class="fas fa-star-half-alt"></i>
+                                                            {% else %}
+                                                                <i class="far fa-star"></i>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </span>
+                                                <span class="text-muted ms-1">
+                                                    ({{ service.review_count }})
+                                                </span>
+                                            </div>
+                                        {% else %}
+                                            <div class="small text-muted mt-1">No reviews yet</div>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ service.location|default:"Online" }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="{% url 'service_detail' service.id %}"
+                                   class="btn btn-outline-primary w-100">
+                                    View Details <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        <i class="fas fa-info-circle"></i> No services found matching your criteria.
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i>
+                            No services found matching your criteria.
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
             </div>
-            
+
             <!-- Pagination -->
             {% if services.has_other_pages %}
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if services.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ services.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
-                            Previous
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for num in services.paginator.page_range %}
-                        {% if services.number == num %}
-                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                        {% elif num > services.number|add:'-3' and num < services.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
-                                {{ num }}
-                            </a>
-                        </li>
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if services.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ services.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                                    Previous
+                                </a>
+                            </li>
                         {% endif %}
-                    {% endfor %}
-                    
-                    {% if services.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ services.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
-                            Next
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
+
+                        {% for num in services.paginator.page_range %}
+                            {% if services.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > services.number|add:'-3' and num < services.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if services.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ services.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                                    Next
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
             {% endif %}
         </div>
     </div>
@@ -195,7 +219,7 @@
     }
     .service-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
     }
 </style>
 {% endblock %}

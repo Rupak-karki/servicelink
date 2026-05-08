@@ -3,12 +3,13 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row">
+        <!-- Left Column: Main Service -->
         <div class="col-md-8">
             <!-- Main Service Card -->
             <div class="card shadow-sm">
                 {% if service.image %}
-                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}" 
-                     style="max-height: 400px; object-fit: cover;">
+                    <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}" 
+                         style="max-height: 400px; object-fit: cover;">
                 {% endif %}
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -18,14 +19,14 @@
                         </div>
                         <h2 class="text-primary">Rs. {{ service.price }}</h2>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <h5><i class="fas fa-align-left"></i> Description</h5>
                     <p class="lead">{{ service.description }}</p>
-                    
+
                     <hr>
-                    
+
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <h5><i class="fas fa-user"></i> Service Provider</h5>
@@ -36,14 +37,14 @@
                             <p>{{ service.location|default:"Online service available" }}</p>
                         </div>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="d-flex gap-2">
-                        <a href="{% url 'book_service' service.id %}" class="btn btn-success btn-lg      flex-grow-1">
-                                  <i class="fas fa-calendar-check"></i> Book This Service
+                        <a href="{% url 'book_service' service.id %}" 
+                           class="btn btn-success btn-lg flex-grow-1">
+                            <i class="fas fa-calendar-check"></i> Book This Service
                         </a>
-                        
                         <button class="btn btn-outline-primary btn-lg" onclick="window.history.back()">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
@@ -51,7 +52,8 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- Right Column: Provider Info, Reviews, Similar Services -->
         <div class="col-md-4">
             <!-- Provider Info Card -->
             <div class="card shadow-sm mb-4">
@@ -61,33 +63,93 @@
                 <div class="card-body text-center">
                     <i class="fas fa-user-circle fa-4x text-muted mb-3"></i>
                     <h5>{{ service.provider.username }}</h5>
-                    <p class="text-muted small">Member since {{ service.provider.date_joined|date:"F Y" }}</p>
+                    <p class="text-muted small">
+                        Member since {{ service.provider.date_joined|date:"F Y" }}
+                    </p>
                     <button class="btn btn-secondary w-100" onclick="alert('Contact feature coming soon!')">
                         <i class="fas fa-envelope"></i> Contact Provider
                     </button>
                 </div>
             </div>
-            
-            <!-- Similar Services -->
-            {% if related_services %}
-            <div class="card shadow-sm">
+
+            <!-- Reviews Section -->
+            <div class="card shadow-sm mt-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-tags"></i> Similar Services</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-star"></i> Customer Reviews
+                        {% if avg_rating > 0 %}
+                            <span class="ms-2">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= avg_rating %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        {% if forloop.counter <= avg_rating|add:0.5 %}
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                ({{ avg_rating }} / 5 from {{ review_count }} reviews)
+                            </span>
+                        {% endif %}
+                    </h5>
                 </div>
                 <div class="card-body">
-                    {% for related in related_services %}
-                    <div class="mb-3">
-                        <a href="{% url 'service_detail' related.id %}" class="text-decoration-none">
-                            <div class="d-flex justify-content-between">
-                                <span>{{ related.title|truncatechars:25 }}</span>
-                                <span class="text-primary">Rs. {{ related.price }}</span>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="border-bottom mb-3 pb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ review.booking.customer.username }}</strong>
+                                        <div class="text-warning small">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ review.created_at|date:"F j, Y" }}
+                                    </small>
+                                </div>
+                                <p class="mt-2 mb-0">{{ review.comment }}</p>
                             </div>
-                        </a>
-                    </div>
-                    {% if not forloop.last %}<hr>{% endif %}
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">
+                                No reviews yet. Be the first to review this service!
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
+
+            <!-- Similar Services -->
+            {% if related_services %}
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-tags"></i> Similar Services</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for related in related_services %}
+                            <div class="mb-3">
+                                <a href="{% url 'service_detail' related.id %}" class="text-decoration-none">
+                                    <div class="d-flex justify-content-between">
+                                        <span>{{ related.title|truncatechars:25 }}</span>
+                                        <span class="text-primary">Rs. {{ related.price }}</span>
+                                    </div>
+                                </a>
+                            </div>
+                            {% if not forloop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>

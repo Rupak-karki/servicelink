@@ -47,6 +47,17 @@ def service_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
+# AFTER pagination, before returning context, add ratings
+# For each service in page_obj, calculate average rating
+    for service in page_obj:
+        reviews = Review.objects.filter(booking__service=service)
+        if reviews.exists():
+            service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
+            service.review_count = reviews.count()
+        else:
+            service.avg_rating = 0
+            service.review_count = 0
+    
     # Get all categories for filter dropdown
     categories = Category.objects.all()
     
@@ -59,15 +70,26 @@ def service_list(request):
         'max_price': max_price,
         'sort_by': sort_by,
     }
- # Add average rating to each service
-    for service in services:
-        reviews = Review.objects.filter(booking__service=service)
-        if reviews.exists():
-            service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
-            service.review_count = reviews.count()
-        else:
-            service.avg_rating = 0
-            service.review_count = 0
+#  # Add average rating to each service
+#     for service in services:
+#         reviews = Review.objects.filter(booking__service=service)
+#         if reviews.exists():
+#             service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
+#             service.review_count = reviews.count()
+#         else:
+#             service.avg_rating = 0
+#             service.review_count = 0
+
+    # # AFTER pagination, before returning context, add ratings
+    # # For each service in page_obj, calculate average rating
+    # for service in page_obj:
+    #     reviews = Review.objects.filter(booking__service=service)
+    #     if reviews.exists():
+    #         service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
+    #         service.review_count = reviews.count()
+    #     else:
+    #         service.avg_rating = 0
+    #         service.review_count = 0
 
     return render(request, 'services/service_list.html', context)
 
@@ -80,10 +102,25 @@ def service_detail(request, pk):
         category=service.category, 
         is_available=True
     ).exclude(pk=pk)[:3]  # Show max 3 related services
+
+        
+    # Get all reviews for this service
+    reviews = Review.objects.filter(booking__service=service)
+    
+    # Calculate average rating
+    if reviews.exists():
+        avg_rating = sum(r.rating for r in reviews) / reviews.count()
+        avg_rating = round(avg_rating, 1)  # One decimal place
+    else:
+        avg_rating = 0
+    
     
     context = {
         'service': service,
         'related_services': related_services,
+        'reviews': reviews,
+        'avg_rating': avg_rating,
+        'review_count': reviews.count(),
     }
     return render(request, 'services/service_detail.html', context)
 
