@@ -70,26 +70,6 @@ def service_list(request):
         'max_price': max_price,
         'sort_by': sort_by,
     }
-#  # Add average rating to each service
-#     for service in services:
-#         reviews = Review.objects.filter(booking__service=service)
-#         if reviews.exists():
-#             service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
-#             service.review_count = reviews.count()
-#         else:
-#             service.avg_rating = 0
-#             service.review_count = 0
-
-    # # AFTER pagination, before returning context, add ratings
-    # # For each service in page_obj, calculate average rating
-    # for service in page_obj:
-    #     reviews = Review.objects.filter(booking__service=service)
-    #     if reviews.exists():
-    #         service.avg_rating = sum(r.rating for r in reviews) / reviews.count()
-    #         service.review_count = reviews.count()
-    #     else:
-    #         service.avg_rating = 0
-    #         service.review_count = 0
 
     return render(request, 'services/service_list.html', context)
 
@@ -193,7 +173,7 @@ def cancel_booking(request, pk):
     if booking.status == 'pending':
         booking.status = 'cancelled'
         booking.save()
-        messages.success(request, 'Your booking has been cancelled.')
+        messages.success(request, f'Booking #{booking.id} has been cancelled.')
     else:
         messages.error(request, 'Cannot cancel booking at this stage.')
     
