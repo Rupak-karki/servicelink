@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user-edit"></i> Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Account Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                {{ user_form.username }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                {{ user_form.email }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                {{ user_form.first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                {{ user_form.last_name }}
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <h5 class="mb-3">Profile Information</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            {{ profile_form.phone }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            {{ profile_form.address }}
+                        </div>
+                        
+                        {% if user_type == 'provider' %}
+                        <div class="mb-3">
+                            <label class="form-label">Bio / About Your Services</label>
+                            {{ profile_form.bio }}
+                            <small class="text-muted">Tell customers about your experience and services</small>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Profile Picture</label>
+                            {{ profile_form.profile_picture }}
+                            {% if request.user.profile.profile_picture %}
+                                <div class="mt-2">
+                                    <img src="{{ request.user.profile.profile_picture.url }}" alt="Current" style="width: 80px; height: 80px; border-radius: 50%;">
+                                    <small class="text-muted">Current picture</small>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <hr>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'profile_view' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

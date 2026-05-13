@@ -60,36 +60,47 @@
 
                     <!-- Authenticated users -->
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                        <!-- Dropdown User Menu -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> {{ user.username }}
                             </a>
-                        </li>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'profile_view' %}">
+                                        <i class="fas fa-id-card"></i> My Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'dashboard' %}">
+                                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                                    </a>
+                                </li>
 
-                        <!-- Provider-only menu -->
-                        {% if user.profile.user_type == 'provider' %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'manage_bookings' %}">
-                                <i class="fas fa-tasks"></i> Manage Bookings
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                             <a class="nav-link" href="{% url 'provider_services' %}">
-                                 <i class="fas fa-tools"></i> My Services
-                            </a>
-                        </li>
+                                <!-- Provider-only menu -->
+                                {% if user.profile.user_type == 'provider' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'manage_bookings' %}">
+                                            <i class="fas fa-tasks"></i> Manage Bookings
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'provider_services' %}">
+                                            <i class="fas fa-tools"></i> My Services
+                                        </a>
+                                    </li>
+                                {% endif %}
 
-                        {% endif %}
-
-
-                        <!-- Logout -->
-                        <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="nav-link btn btn-link" style="display: inline; background: none; border: none; color: rgba(255,255,255,0.85); padding: 8px 16px;">
-                                    Logout ({{ user.username }})
-                                </button>
-                            </form>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     {% else %}
                         <!-- Guest menu -->
