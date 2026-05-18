@@ -90,8 +90,9 @@
                     </p>
                     <p>
                         <i class="fab fa-whatsapp text-success"></i>
-                        <a href="https://wa.me/{{ service.provider.profile.phone }}" 
+                        <a href="https://wa.me/977{{ service.provider.profile.phone }}" 
                            target="_blank" class="text-decoration-none">
+                           {% comment %} # if wants multi-country support, can use {{ service.provider.profile.phone|cut:'+' }} instead of hardcoding country code {% endcomment %}
                             Chat on WhatsApp
                         </a>
                     </p>
