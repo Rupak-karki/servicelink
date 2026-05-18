@@ -88,6 +88,13 @@
                             {{ service.provider.profile.phone|default:"Not provided" }}
                         </a>
                     </p>
+                    <p>
+                        <i class="fab fa-whatsapp text-success"></i>
+                        <a href="https://wa.me/{{ service.provider.profile.phone }}" 
+                           target="_blank" class="text-decoration-none">
+                            Chat on WhatsApp
+                        </a>
+                    </p>
 
                     <!-- Bio -->
                     {% if service.provider.profile.bio %}
