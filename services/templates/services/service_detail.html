@@ -61,14 +61,45 @@
                     <h5 class="mb-0"><i class="fas fa-store"></i> About Provider</h5>
                 </div>
                 <div class="card-body text-center">
-                    <i class="fas fa-user-circle fa-4x text-muted mb-3"></i>
+                    <!-- Profile picture -->
+                    {% if service.provider.profile.profile_picture %}
+                        <img src="{{ service.provider.profile.profile_picture.url }}" 
+                             alt="Provider Picture" class="rounded-circle mb-3"
+                             style="width:100px; height:100px; object-fit:cover;">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-4x text-muted mb-3"></i>
+                    {% endif %}
+
                     <h5>{{ service.provider.username }}</h5>
                     <p class="text-muted small">
                         Member since {{ service.provider.date_joined|date:"F Y" }}
                     </p>
-                    <button class="btn btn-secondary w-100" onclick="alert('Contact feature coming soon!')">
-                        <i class="fas fa-envelope"></i> Contact Provider
-                    </button>
+
+                    <!-- Contact details -->
+                    <p>
+                        <i class="fas fa-envelope text-primary"></i>
+                        <a href="mailto:{{ service.provider.email }}" class="text-decoration-none">
+                            {{ service.provider.email|default:"Not provided" }}
+                        </a>
+                    </p>
+                    <p>
+                        <i class="fas fa-phone text-success"></i>
+                        <a href="tel:{{ service.provider.profile.phone }}" class="text-decoration-none">
+                            {{ service.provider.profile.phone|default:"Not provided" }}
+                        </a>
+                    </p>
+
+                    <!-- Bio -->
+                    {% if service.provider.profile.bio %}
+                        <p class="mt-3">{{ service.provider.profile.bio }}</p>
+                    {% endif %}
+
+                    <!-- Buttons -->
+                    <div class="d-grid gap-2 mt-3">
+                        <button class="btn btn-secondary w-100" onclick="alert('Contact feature coming soon!')">
+                            <i class="fas fa-envelope"></i> Contact Provider
+                        </button>
+                    </div>
                 </div>
             </div>
 
