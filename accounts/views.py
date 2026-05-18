@@ -3,7 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.db.models import Count, Avg, Sum  # Added these imports
+from services.models import Booking, Review  # Added this import
 from .forms import (
     CustomRegistrationForm,
     UserUpdateForm,
@@ -60,10 +61,59 @@ def dashboard(request):
 
 @login_required
 def profile_view(request):
-    """View user profile"""
+    """View user profile with statistics"""
+    user = request.user
+    profile = user.profile
+    
+    # Initialize statistics
+    stats = {
+        'services_count': 0,
+        'bookings_count': 0,
+        'reviews_count': 0,
+        'total_earnings': 0,
+        'avg_rating': 0
+    }
+    
+    if profile.user_type == 'provider':
+        # Count provider's services
+        stats['services_count'] = user.services.count()
+        
+        # Count bookings for provider's services
+        stats['bookings_count'] = Booking.objects.filter(
+            service__provider=user
+        ).count()
+        
+        # Count completed bookings for earnings
+        completed_bookings = Booking.objects.filter(
+            service__provider=user,
+            status='completed'
+        )
+        stats['completed_bookings'] = completed_bookings.count()
+        
+        # Calculate total earnings (sum of service prices for completed bookings)
+        total_earnings = 0
+        for booking in completed_bookings:
+            total_earnings += booking.service.price
+        stats['total_earnings'] = total_earnings
+        
+        # Calculate average rating
+        reviews = Review.objects.filter(booking__service__provider=user)
+        stats['reviews_count'] = reviews.count()
+        if reviews.exists():
+            avg = reviews.aggregate(Avg('rating'))['rating__avg']
+            stats['avg_rating'] = round(avg, 1)
+    
+    elif profile.user_type == 'customer':
+        # Count customer's bookings
+        stats['bookings_count'] = Booking.objects.filter(customer=user).count()
+        
+        # Count customer's reviews
+        stats['reviews_count'] = Review.objects.filter(booking__customer=user).count()
+    
     return render(request, 'accounts/profile_view.html', {
-        'user': request.user,
-        'profile': request.user.profile,
+        'user': user,
+        'profile': profile,
+        'stats': stats
     })
 
 

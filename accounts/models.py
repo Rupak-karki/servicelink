@@ -21,10 +21,10 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.get_user_type_display()}"
     
-    def get_profile_picture_url(self):
-        if self.profile_picture:
-            return self.profile_picture.url
-        return '/static/images/default-avatar.png'
+def get_profile_picture_url(self):
+    if self.profile_picture:
+        return self.profile_picture.url
+    return None  # Return None instead of a broken URL
 
 # Auto-create profile when user is created
 @receiver(post_save, sender=User)
