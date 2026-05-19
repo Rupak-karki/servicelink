@@ -1,0 +1,50 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+*.env
+
+# Django project files
+db.sqlite3
+*.log
+
+# Media uploads (user files like profile pics, service images)
+media/
+
+# Static files collected by collectstatic
+staticfiles/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Node / frontend (if added later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Secrets and environment configs
+.env
+*.env.local
+*.env.development
+*.env.production
+*.secret
+*.key
+*.pem
+
+# Backup and dump files
+*.bak
+*.sql
+*.sqlite3
+*.dump
+*.backup
