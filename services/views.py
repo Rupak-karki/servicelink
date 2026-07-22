@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect  # Added 'redirect'
-from django.db.models import Q
+from django.db.models import Q, Avg, Count  # Added 'Avg' and 'Count'
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required  # Added this
 from django.contrib import messages  # Added this
@@ -8,6 +8,50 @@ from .forms import BookingForm  # Added this
 
 from .forms import ServiceForm, ReviewForm  # Added this
 
+def home(request):
+  # Categories with live service + provider counts
+    categories = (
+        Category.objects.annotate(
+            service_count=Count(
+                'service',
+                filter=Q(service__is_available=True),
+                distinct=True,
+            ),
+            provider_count=Count(
+                'service__provider',
+                filter=Q(service__is_available=True),
+                distinct=True,
+            ),
+        )
+        .order_by('-service_count')[:6]  # top 6 categories
+    )
+    # Featured services (newest available)
+    featured_services = (
+        Service.objects.filter(is_available=True)
+        .select_related('category', 'provider')
+        .order_by('-created_at')[:3]
+    )
+    # Attach ratings (same pattern as service_list)
+    for service in featured_services:
+        reviews = Review.objects.filter(booking__service=service)
+        if reviews.exists():
+            service.avg_rating = round(
+                sum(r.rating for r in reviews) / reviews.count(), 1
+            )
+            service.review_count = reviews.count()
+        else:
+            service.avg_rating = 0
+            service.review_count = 0
+    # All categories for search dropdown
+    all_categories = Category.objects.all()
+    return render(request, 'home.html', {
+        'categories': categories,
+        'featured_services': featured_services,
+        'all_categories': all_categories,
+    })
+
+
+    
 def service_list(request):
     # Start with all available services
     services = Service.objects.filter(is_available=True)
