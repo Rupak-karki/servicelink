@@ -6,9 +6,8 @@ from django.conf.urls.static import static  # Add this
 from services.models import Category, Service
 from accounts.models import UserProfile
 from django.contrib.auth.models import User
+from services.views import home  # Import the home view
 
-def home(request):
-    return render(request, 'home.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

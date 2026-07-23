@@ -63,7 +63,7 @@
     <div class="row">
         {% for service in featured_services %}
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100">
+                <div class="card service-card h-100 shadow-sm">
                     {% if service.image %}
                         <img src="{{ service.image.url }}" class="card-img-top"
                              alt="{{ service.title }}" style="height: 180px; object-fit: cover;">
@@ -79,25 +79,80 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="h5 text-primary mb-0">Rs. {{ service.price }}</span>
                             {% if service.avg_rating > 0 %}
-                                <span>
+                                <span class="small">
                                     <i class="fas fa-star text-warning"></i>
-                                    {{ service.avg_rating }} ({{ service.review_count }} review{{ service.review_count|pluralize }})
+                                    {{ service.avg_rating }}
+                                    ({{ service.review_count }} review{{ service.review_count|pluralize }})
                                 </span>
                             {% else %}
                                 <span class="text-muted small">No reviews yet</span>
                             {% endif %}
                         </div>
                         <a href="{% url 'service_detail' service.id %}"
-                           class="btn btn-primary w-100 mt-3">View Details</a>
+                           class="btn btn-primary w-100 mt-3">
+                            View Details <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12 text-center">
                 <p class="text-muted">No services available yet.</p>
-                <a href="{% url 'service_list' %}" class="btn btn-outline-primary">Browse All Services</a>
+                <a href="{% url 'service_list' %}" class="btn btn-outline-primary">
+                    Browse All Services
+                </a>
             </div>
         {% endfor %}
     </div>
+
+    {% if featured_services %}
+        <div class="text-center mt-2 mb-5">
+            <a href="{% url 'service_list' %}" class="btn btn-outline-primary btn-lg">
+                View All Services <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- How It Works -->
+    <h2 class="text-center mt-5 mb-4">How ServiceLink Works</h2>
+    <div class="row text-center">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light h-100">
+                <div class="card-body">
+                    <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                    <h5>1. Search</h5>
+                    <p class="text-muted mb-0">Find the service you need in your area</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light h-100">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                    <h5>2. Book</h5>
+                    <p class="text-muted mb-0">Choose a provider and schedule an appointment</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light h-100">
+                <div class="card-body">
+                    <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                    <h5>3. Review</h5>
+                    <p class="text-muted mb-0">Rate and review your experience</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .service-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
 {% endblock %}
