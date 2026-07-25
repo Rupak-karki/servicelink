@@ -33,23 +33,37 @@
                             </span>
                         </td>
                         <td>
-                            <div class="btn-group btn-group-sm">
+
+                            <div class="d-flex gap-1 flex-wrap">
                                 {% if booking.status == 'pending' %}
-                                    <a href="{% url 'update_booking_status' booking.id 'confirmed' %}" class="btn btn-success">
-                                        <i class="fas fa-check"></i> Accept
-                                    </a>
-                                    <a href="{% url 'update_booking_status' booking.id 'cancelled' %}" class="btn btn-danger">
-                                        <i class="fas fa-times"></i> Reject
-                                    </a>
+                                    <form method="post" action="{% url 'update_booking_status' booking.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" name="status" value="confirmed" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check"></i> Accept
+                                        </button>
+                                    </form>
+
+                                    <form method="post" action="{% url 'update_booking_status' booking.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" name="status" value="cancelled" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </form>
+
                                 {% elif booking.status == 'confirmed' %}
-                                    <a href="{% url 'update_booking_status' booking.id 'completed' %}" class="btn btn-primary">
-                                        <i class="fas fa-check-double"></i> Mark Completed
-                                    </a>
+                                    <form method="post" action="{% url 'update_booking_status' booking.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" name="status" value="completed" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-check-double"></i> Mark Completed
+                                        </button>
+                                    </form>
                                 {% endif %}
-                                <a href="#" class="btn btn-info" onclick="alert('Contact: {{ booking.customer.email }}')">
+
+                                <a href="#" class="btn btn-info btn-sm" onclick="alert('Contact: {{ booking.customer.email }}')">
                                     <i class="fas fa-envelope"></i> Contact
                                 </a>
                             </div>
+
                         </td>
                     </tr>
                     {% endfor %}

@@ -12,7 +12,7 @@ urlpatterns = [
     
     # Booking URLs (specific patterns first)
     path('booking/<int:pk>/cancel/', views.cancel_booking, name='cancel_booking'),
-    path('booking/<int:pk>/<str:status>/', views.update_booking_status, name='update_booking_status'),
+    path('booking/<int:pk>/status/', views.update_booking_status, name='update_booking_status'),
     
     # Review URLs
     path('review/<int:booking_id>/', views.leave_review, name='leave_review'),

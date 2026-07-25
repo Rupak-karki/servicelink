@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect  # Added 'redir
 from django.db.models import Q, Avg, Count  # Added 'Avg' and 'Count'
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required  # Added this
+from django.views.decorators.http import require_POST
 from django.contrib import messages  # Added this
 from .models import Service, Category, Booking, Review  # Added'Review'
 from .forms import BookingForm  # Added this
@@ -211,30 +212,51 @@ def manage_bookings(request):
     })
 
 # Add this view - Update booking status
+
 @login_required
-def update_booking_status(request, pk, status):
-    booking = get_object_or_404(Booking, pk=pk, service__provider=request.user)
-    
-    valid_statuses = ['confirmed', 'completed', 'cancelled']
-    if status in valid_statuses:
-        booking.status = status
-        booking.save()
-        messages.success(request, f'Booking #{booking.id} has been {status}!')
-    
+@require_POST
+def update_booking_status(request, pk):
+    booking = get_object_or_404(
+        Booking,
+        pk=pk,
+        service__provider=request.user,
+    )
+
+    new_status = request.POST.get('status')
+
+    allowed_transitions = {
+        'pending': {'confirmed', 'cancelled'},
+        'confirmed': {'completed'},
+    }
+
+    if new_status not in allowed_transitions.get(booking.status, set()):
+        messages.error(request, 'This booking cannot be changed to that status.')
+        return redirect('manage_bookings')
+
+    booking.status = new_status
+    booking.save(update_fields=['status', 'updated_at'])
+
+    messages.success(
+        request,
+        f'Booking #{booking.id} has been marked as {new_status}.'
+    )
     return redirect('manage_bookings')
 
-# Add this view - Cancel booking (Customer)
+# Cancel booking 
+
 @login_required
+@require_POST
 def cancel_booking(request, pk):
     booking = get_object_or_404(Booking, pk=pk, customer=request.user)
-    
-    if booking.status == 'pending':
-        booking.status = 'cancelled'
-        booking.save()
-        messages.success(request, f'Booking #{booking.id} has been cancelled.')
-    else:
-        messages.error(request, 'Cannot cancel booking at this stage.')
-    
+
+    if booking.status != 'pending':
+        messages.error(request, 'Only pending bookings can be cancelled.')
+        return redirect('my_bookings')
+
+    booking.status = 'cancelled'
+    booking.save(update_fields=['status', 'updated_at'])
+
+    messages.success(request, f'Booking #{booking.id} has been cancelled.')
     return redirect('my_bookings')
 
 
