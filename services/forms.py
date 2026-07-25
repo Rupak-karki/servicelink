@@ -58,13 +58,13 @@ class BookingForm(forms.ModelForm):
         duplicate_exists = Booking.objects.filter(
             service=self.service,
             customer=self.customer,
-            booking_date=booking_date,
             status__in=['pending', 'confirmed'],
         ).exists()
 
         if duplicate_exists:
-            raise forms.ValidationError(
-                'You already have an active booking for this service at that time.'
+           raise forms.ValidationError(
+                'You already have an active  booking for this service. '
+                'Please wait for it to be completed or cancelled before booking again.'
             )
 
         return cleaned_data
