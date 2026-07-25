@@ -8,6 +8,7 @@ from .models import Service, Category, Booking, Review  # Added'Review'
 from .forms import BookingForm  # Added this
 
 from .forms import ServiceForm, ReviewForm  # Added this
+from decimal import Decimal, InvalidOperation
 
 def home(request):
   # Categories with live service + provider counts
@@ -77,10 +78,37 @@ def service_list(request):
         services = services.filter(category__slug=category_slug)
     
     # === PRICE FILTER ===
-    if min_price:
-        services = services.filter(price__gte=min_price)  # greater than or equal
-    if max_price:
-        services = services.filter(price__lte=max_price)  # less than or equal
+    try:
+        min_price_value = Decimal(min_price) if min_price else None
+        max_price_value = Decimal(max_price) if max_price else None
+
+        if (
+            (min_price_value is not None and min_price_value < 0)
+            or (max_price_value is not None and max_price_value < 0)
+        ):
+            raise InvalidOperation
+
+        if (
+            min_price_value is not None
+            and max_price_value is not None
+            and min_price_value > max_price_value
+        ):
+            messages.error(
+                request,
+                'Minimum price cannot be greater than maximum price.'
+            )
+        else:
+            if min_price_value is not None:
+                services = services.filter(price__gte=min_price_value)
+
+            if max_price_value is not None:
+                services = services.filter(price__lte=max_price_value)
+
+    except (InvalidOperation, ValueError):
+        messages.error(
+            request,
+            'Please enter valid positive numbers for the price range.'
+        )
     
     # === SORTING ===
     valid_sorts = ['price', '-price', 'created_at', '-created_at', 'title']
