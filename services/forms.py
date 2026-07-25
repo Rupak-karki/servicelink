@@ -1,14 +1,25 @@
+from django.utils import timezone
 from django import forms
 from .models import Booking, Service, Category, Review
 
 class BookingForm(forms.ModelForm):
+    def __init__(self, *args, service=None, customer=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.service = service
+        self.customer = customer
+
+        # Helps users select a future time in the browser.
+        self.fields['booking_date'].widget.attrs['min'] = (
+            timezone.localtime(timezone.now()).strftime('%Y-%m-%dT%H:%M')
+        )
+
     class Meta:
         model = Booking
         fields = ['booking_date', 'special_requests']
         widgets = {
             'booking_date': forms.DateTimeInput(attrs={
                 'type': 'datetime-local',
-                'class': 'form-control'
+                'class': 'form-control',
             }),
             'special_requests': forms.Textarea(attrs={
                 'class': 'form-control',
@@ -20,6 +31,44 @@ class BookingForm(forms.ModelForm):
             'booking_date': 'Preferred Date & Time',
             'special_requests': 'Special Requests (Optional)'
         }
+
+    def clean_booking_date(self):
+        booking_date = self.cleaned_data['booking_date']
+
+        # Server-side validation: cannot be bypassed by editing browser HTML.
+        if booking_date <= timezone.now():
+            raise forms.ValidationError(
+                'Please choose a booking date and time in the future.'
+            )
+
+        return booking_date
+
+    def clean(self):
+        cleaned_data = super().clean()
+        booking_date = cleaned_data.get('booking_date')
+
+        if not self.service or not self.customer or not booking_date:
+            return cleaned_data
+
+        if self.service.provider_id == self.customer.id:
+            raise forms.ValidationError(
+                'You cannot book a service that you provide yourself.'
+            )
+
+        duplicate_exists = Booking.objects.filter(
+            service=self.service,
+            customer=self.customer,
+            booking_date=booking_date,
+            status__in=['pending', 'confirmed'],
+        ).exists()
+
+        if duplicate_exists:
+            raise forms.ValidationError(
+                'You already have an active booking for this service at that time.'
+            )
+
+        return cleaned_data
+    
 
 class ServiceForm(forms.ModelForm):
     class Meta:

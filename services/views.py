@@ -155,22 +155,36 @@ def service_detail(request, pk):
 @login_required
 def book_service(request, pk):
     service = get_object_or_404(Service, pk=pk, is_available=True)
-    
+
+    # Give immediate feedback before displaying the booking form.
+    if service.provider_id == request.user.id:
+        messages.error(request, 'You cannot book a service that you provide yourself.')
+        return redirect('service_detail', pk=service.pk)
+
     if request.method == 'POST':
-        form = BookingForm(request.POST)
+        form = BookingForm(
+            request.POST,
+            service=service,
+            customer=request.user,
+        )
         if form.is_valid():
             booking = form.save(commit=False)
             booking.service = service
             booking.customer = request.user
             booking.save()
-            messages.success(request, f'Your booking for "{service.title}" has been submitted! Provider will confirm soon.')
+
+            messages.success(
+                request,
+                f'Your booking for "{service.title}" has been submitted! '
+                'The provider will confirm it soon.'
+            )
             return redirect('my_bookings')
     else:
-        form = BookingForm()
-    
+        form = BookingForm(service=service, customer=request.user)
+
     return render(request, 'services/book_service.html', {
         'form': form,
-        'service': service
+        'service': service,
     })
 
 # Add this view - My Bookings (Customer view)
